@@ -4,8 +4,8 @@ import { ALL_AUTHORS } from '../queries'
 import { useQuery } from '@apollo/client'
 import AuthorYearForm from './AuthorYearForm'
 
-const Authors = (props) => {
-  if (!props.show) {
+const Authors = ({ show, token }) => {
+  if (!show) {
     return null
   }
 
@@ -40,7 +40,10 @@ const Authors = (props) => {
           )}
         </tbody>
       </table>
-      <AuthorYearForm authors={authors}/>
+      {token ?
+        <AuthorYearForm authors={authors} /> :
+        null
+      }
     </div>
   )
 }
