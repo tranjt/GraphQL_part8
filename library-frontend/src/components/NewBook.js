@@ -16,7 +16,6 @@ const NewBook = (props) => {
     }
   })
 
-
   if (!props.show) {
     return null
   }
@@ -24,9 +23,8 @@ const NewBook = (props) => {
   const submit = async (event) => {
     event.preventDefault()
 
-    const numPublished = Number(published)
     createBook({
-      variables: { title, author, numPublished, genres }
+      variables: { title, author, published: Number(published), genres }
     })
     setTitle('')
     setPublished('')

@@ -20,10 +20,9 @@ const AuthorYearForm = ({ authors }) => {
   const submit = async (event) => {
     event.preventDefault()
 
-    const numYear = Number(year)
     const name = selectedOption.value
     updateAuthor({
-      variables: { name, numYear }
+      variables: { name, year: Number(year) }
     })
     setYear('')
   }
