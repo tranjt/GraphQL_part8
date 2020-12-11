@@ -104,7 +104,13 @@ const resolvers = {
       return book
     },
     editAuthor: async (root, args) => {
-      return await Author.findOneAndUpdate({ "name": args.name }, { "born": args.setBornTo }, { new: true })
+      try {
+        return await Author.findOneAndUpdate({ "name": args.name }, { "born": args.setBornTo }, { new: true })
+      } catch (error) {
+        throw new UserInputError(error.message, {
+          invalidArgs: args,
+        })
+      }
     }
   }
 }
