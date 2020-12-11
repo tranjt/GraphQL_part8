@@ -56,27 +56,26 @@ const resolvers = {
   Query: {
     bookCount: () => Book.collection.countDocuments(),
     authorCount: () => Author.collection.countDocuments(),
-    allBooks: (root, args) => {
+    allBooks: async (root, args) => {
       if (!args.author && !args.genre) {
         return Book.find({}).populate('author', { name: 1, id: 1 })
       }
       if (args.author && args.genre) {
-        return books.filter(book => {
-          return book.author === args.author && book.genres.includes(args.genre)
-        })
+        const books = await Book.find({ genres: { $in: [args.genre] } }).populate('author', { name: 1, id: 1 })
+        return books.filter(book => book.author.name === args.author)
       }
       if (args.genre) {
-        return Book.find({ genres: { $in: [args.genre] } })
+        return Book.find({ genres: { $in: [args.genre] } }).populate('author', { name: 1, id: 1 })
       }
-      return books.filter(book => book.author === args.author)
+      const books = await Book.find({}).populate('author', { name: 1, id: 1 })
+      return books.filter(book => book.author.name === args.author)
     },
     allAuthors: () => Author.find({}),
   },
   Author: {
     bookCount: async (root) => {
-      const books = await (await Book.find({}).populate('author', { name: 1 }))
+      const books = await Book.find({}).populate('author', { name: 1 })
       const authorBooks = books.filter(book => book.author.name === root.name)
-
       return authorBooks.length
     }
   },
