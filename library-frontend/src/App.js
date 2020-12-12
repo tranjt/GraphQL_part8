@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useApolloClient } from '@apollo/client'
 import Authors from './components/Authors'
 import Books from './components/Books'
@@ -12,6 +12,14 @@ const App = () => {
   const [page, setPage] = useState('authors')
   const [token, setToken] = useState(null)
   const client = useApolloClient()
+
+  useEffect(() => {
+    const savedToken = window.localStorage.getItem('phonenumbers-user-token')
+    if (savedToken) {
+      setToken(savedToken)
+    }
+  }, [])
+
 
   const logout = () => {
     setToken(null)
