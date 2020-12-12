@@ -7,6 +7,7 @@ import NewBook from './components/NewBook'
 import LoginForm from './components/LoginForm'
 import Recommendation from './components/Recommendation'
 
+
 const App = () => {
   const [page, setPage] = useState('authors')
   const [token, setToken] = useState(null)
@@ -16,6 +17,7 @@ const App = () => {
     setToken(null)
     localStorage.clear()
     client.resetStore()
+    setPage('authors')
   }
 
   return (
@@ -35,7 +37,6 @@ const App = () => {
           <button onClick={logout} >logout</button> :
           <button onClick={() => setPage('login')}>login</button>
         }
-
       </div>
 
       <Authors show={page === 'authors'} token={token} />

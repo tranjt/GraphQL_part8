@@ -23,6 +23,18 @@ export const ALL_BOOKS = gql`
   }
 `
 
+export const ALL_RECOMMENDED_BOOKS = gql`
+  query recommendedBooks($favoriteGenre: String!){
+    allBooks (genre: $favoriteGenre){
+      title
+      author {
+        name
+      }
+      published
+      genres
+    }
+  }
+`
 
 export const USER = gql`
 query {
