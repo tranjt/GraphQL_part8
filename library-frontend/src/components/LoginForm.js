@@ -18,7 +18,7 @@ const LoginForm = ({ setToken, show, setPage }) => {
       console.log('-->', result.data)
       const token = result.data.login.value
       setToken(token)
-      localStorage.setItem('phonenumbers-user-token', token)
+      localStorage.setItem('user-token', token)
       setPage('authors')
       setUsername('')
       setPassword('')
