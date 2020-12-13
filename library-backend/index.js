@@ -1,4 +1,4 @@
-const { ApolloServer, gql, UserInputError, AuthenticationError  } = require('apollo-server')
+const { ApolloServer, gql, UserInputError, AuthenticationError, PubSub } = require('apollo-server')
 const mongoose = require('mongoose')
 const config = require('./utils/config.js')
 const Author = require('./models/author')
@@ -6,6 +6,8 @@ const Book = require('./models/book')
 const User = require('./models/user')
 const jwt = require('jsonwebtoken')
 
+
+const pubsub = new PubSub()
 const JWT_SECRET = 'TOKEN_SECRET'
 
 console.log('connecting to', config.MONGODB_URI)
@@ -73,9 +75,16 @@ const typeDefs = gql`
     login(
       username: String!
       password: String!
-    ): Token
+    ): Token    
   }
+
+  type Subscription {
+    bookAdded: Book!
+  }  
 `
+
+
+
 
 const resolvers = {
   Query: {
@@ -145,6 +154,8 @@ const resolvers = {
         })
       }
 
+      pubsub.publish('BOOK_ADDED', { bookAdded: book })
+
       return book
     },
 
@@ -165,7 +176,7 @@ const resolvers = {
     },
 
     createUser: (root, args) => {
-      const user = new User({ ...args })      
+      const user = new User({ ...args })
       return user.save()
         .catch(error => {
           throw new UserInputError(error.message, {
@@ -173,7 +184,7 @@ const resolvers = {
           })
         })
     },
-    
+
     login: async (root, args) => {
       const user = await User.findOne({ username: args.username })
 
@@ -188,7 +199,14 @@ const resolvers = {
 
       return { value: jwt.sign(userForToken, JWT_SECRET) }
     },
-  }
+  },
+
+  Subscription: {
+    bookAdded: {
+      subscribe: () => pubsub.asyncIterator(['BOOK_ADDED'])
+    },
+  },
+
 }
 
 const server = new ApolloServer({
@@ -208,6 +226,7 @@ const server = new ApolloServer({
   }
 })
 
-server.listen().then(({ url }) => {
+server.listen().then(({ url, subscriptionsUrl }) => {
   console.log(`Server ready at ${url}`)
+  console.log(`Subscriptions ready at ${subscriptionsUrl}`)
 })
